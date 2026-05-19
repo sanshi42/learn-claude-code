@@ -20,7 +20,7 @@ context, sharing the filesystem, then returns only a summary to the parent.
     Parent context stays clean.
     Subagent context is discarded.
 
-Key insight: "Process isolation gives context isolation for free."
+Key insight: "A fresh message history gives context isolation for free."
 """
 
 import os

@@ -22,7 +22,7 @@ Every turn:
         |
         v
 [Layer 1: micro_compact]        (silent, every turn)
-  Replace tool_result > 3 turns old
+  Replace old non-read_file tool_result content
   with "[Previous: used {tool_name}]"
         |
         v
@@ -47,20 +47,37 @@ continue    [Layer 2: auto_compact]
 1. **第一层 -- micro_compact**: 每次 LLM 调用前, 将旧的 tool result 替换为占位符。
 
 ```python
+KEEP_RECENT = 3
+PRESERVE_RESULT_TOOLS = {"read_file"}
+
 def micro_compact(messages: list) -> list:
     tool_results = []
-    for i, msg in enumerate(messages):
+    for msg_idx, msg in enumerate(messages):
         if msg["role"] == "user" and isinstance(msg.get("content"), list):
-            for j, part in enumerate(msg["content"]):
+            for part_idx, part in enumerate(msg["content"]):
                 if isinstance(part, dict) and part.get("type") == "tool_result":
-                    tool_results.append((i, j, part))
+                    tool_results.append((msg_idx, part_idx, part))
     if len(tool_results) <= KEEP_RECENT:
         return messages
-    for _, _, part in tool_results[:-KEEP_RECENT]:
-        if len(part.get("content", "")) > 100:
-            part["content"] = f"[Previous: used {tool_name}]"
+
+    tool_name_map = {}
+    for msg in messages:
+        if msg["role"] == "assistant" and isinstance(msg.get("content"), list):
+            for block in msg["content"]:
+                if hasattr(block, "type") and block.type == "tool_use":
+                    tool_name_map[block.id] = block.name
+
+    for _, _, result in tool_results[:-KEEP_RECENT]:
+        if not isinstance(result.get("content"), str) or len(result["content"]) <= 100:
+            continue
+        tool_name = tool_name_map.get(result.get("tool_use_id", ""), "unknown")
+        if tool_name in PRESERVE_RESULT_TOOLS:
+            continue
+        result["content"] = f"[Previous: used {tool_name}]"
     return messages
 ```
+
+这段代码会原地修改 `messages` 里的旧 `tool_result` 内容。示例实现保留最近 3 个工具结果, 并保留 `read_file` 的结果, 因为文件内容通常是后续推理的引用材料; 压掉它们会迫使模型重新读文件。
 
 2. **第二层 -- auto_compact**: token 超过阈值时, 保存完整对话到磁盘, 让 LLM 做摘要。
 
@@ -101,6 +118,7 @@ def agent_loop(messages: list):
 ```
 
 完整历史通过 transcript 保存在磁盘上。信息没有真正丢失, 只是移出了活跃上下文。
+官方 Claude Code 也会在上下文接近上限时清理旧工具输出并摘要对话, 但具体策略、重注入规则和预算由产品实现管理; 本章代码只是教学版压缩管线。参考: https://code.claude.com/docs/en/context-window
 
 ## 相对 s05 的变更
 

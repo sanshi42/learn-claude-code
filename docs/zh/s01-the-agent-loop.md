@@ -65,6 +65,8 @@ for block in response.content:
 messages.append({"role": "user", "content": results})
 ```
 
+Claude API 对这一步有硬性顺序要求: 上一条 assistant 消息只要包含 `tool_use`, 下一条 user 消息就必须立即返回对应的 `tool_result`。在这个 user 消息的 `content` 数组里, 所有 `tool_result` 必须排在最前面; 如果还要附加普通文本, 只能放在所有工具结果之后。参见官方说明: https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls
+
 组装为一个完整函数:
 
 ```python

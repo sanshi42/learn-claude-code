@@ -117,6 +117,8 @@ if len(messages) <= 3:
         "content": f"I am {name}. Continuing."})
 ```
 
+边界说明: 本章的“自治”是教学版 idle polling: 线程睡眠、扫 `.tasks/`、读 JSONL 邮箱、再把发现注入自己的消息列表。官方 Claude Code agent teams 中, teammates 是独立 Claude Code 实例, 有产品级任务列表、消息投递、权限继承和实验性限制; 本章不声明其内部调度策略。参考: https://code.claude.com/docs/en/agent-teams
+
 ## 相对 s10 的变更
 
 | 组件           | 之前 (s10)       | 之后 (s11)                       |

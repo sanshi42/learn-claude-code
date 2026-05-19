@@ -265,15 +265,18 @@ def agent_loop(messages):
 ## 范围说明 (重要)
 
 本仓库是一个 0->1 的 harness 工程学习项目 -- 构建围绕 agent 模型的工作环境。
+中文教程以 `agents/*.py` 的当前可运行实现为准: 文档中的代码片段用于解释这些教学脚本的行为, 不是 Claude Code 内部实现的逐行复刻。官方文档用于校验 API 约束和 Claude Code 的公开能力边界; 当教程实现与官方产品不同, 文档会显式标注为教学近似。
+
 为保证学习路径清晰，仓库有意简化或省略了部分生产机制：
 
 - 完整事件 / Hook 总线 (例如 PreToolUse、SessionStart/End、ConfigChange)。
   s12 仅提供教学用途的最小 append-only 生命周期事件流。
-- 基于规则的权限治理与信任流程
+- 基于规则的权限治理、permission mode、sandboxing 与信任流程
 - 会话生命周期控制 (resume/fork) 与更完整的 worktree 生命周期控制
 - 完整 MCP 运行时细节 (transport/OAuth/资源订阅/轮询)
 
 仓库中的团队 JSONL 邮箱协议是教学实现，不是对任何特定生产内部实现的声明。
+默认 `.env.example` 使用 `claude-sonnet-4-6`, 这是速度/成本友好的教学默认值。按 Anthropic 当前模型文档, 复杂推理和高难度 agentic coding 可优先考虑 `claude-opus-4-7`: https://platform.claude.com/docs/en/about-claude/models/overview
 
 ## 快速开始
 

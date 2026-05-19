@@ -82,6 +82,8 @@ def handle_plan_review(request_id, approve, feedback=""):
 
 一个 FSM, 两种用途。同样的 `pending -> approved | rejected` 状态机可以套用到任何请求-响应协议上。
 
+边界说明: 本章的 shutdown/plan approval 协议运行在 s09 的教学邮箱之上, 不是官方 agent teams 的内部协议声明。官方 agent teams 有自己的 lead/teammate 管理、消息投递、任务列表和已知限制; 本章只抽象出“请求带 ID、响应引用同一个 ID”这个可复用 harness 模式。参考: https://code.claude.com/docs/en/agent-teams
+
 ## 相对 s09 的变更
 
 | 组件           | 之前 (s09)       | 之后 (s10)                           |

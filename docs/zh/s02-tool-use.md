@@ -75,7 +75,11 @@ for block in response.content:
         })
 ```
 
+和 s01 一样, `tool_result` 的位置不是自由格式。上一条 assistant 返回 `tool_use` 后, 下一条 user 消息必须先放全部对应 `tool_result`; 任何说明性 text 都只能跟在所有 `tool_result` 后面。否则 Anthropic API 会返回 `tool_use ids were found without tool_result blocks immediately after` 一类 400 错误。
+
 加工具 = 加 handler + 加 schema。循环永远不变。
+
+安全边界也要分清: 这里的 `safe_path()` 只保护 `read_file/write_file/edit_file` 这些专用文件工具; 示例里的 `bash` 只有一个最小 denylist, 不等价于 Claude Code 官方的 permission mode 或 sandboxing。官方 Claude Code 通过权限模式和可选 sandbox 对工具调用、Bash 子进程的文件系统/网络访问做更系统的约束: https://code.claude.com/docs/en/permission-modes 和 https://code.claude.com/docs/en/sandboxing
 
 ## 相对 s01 的变更
 

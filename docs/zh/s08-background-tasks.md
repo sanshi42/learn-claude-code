@@ -86,6 +86,8 @@ def agent_loop(messages: list):
 
 循环保持单线程。只有子进程 I/O 被并行化。
 
+安全边界: `background_run` 复用了教学版 `subprocess.run(..., shell=True)` 和最小 denylist, 只是把等待移到后台线程; 它没有获得 Claude Code 官方 permission mode、sandboxing 或网络隔离能力。真实产品里, 长命令和后台任务仍需要权限与隔离策略配合。参考: https://code.claude.com/docs/en/permission-modes 和 https://code.claude.com/docs/en/sandboxing
+
 ## 相对 s07 的变更
 
 | 组件           | 之前 (s07)       | 之后 (s08)                         |

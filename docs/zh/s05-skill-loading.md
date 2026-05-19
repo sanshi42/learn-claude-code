@@ -86,6 +86,8 @@ TOOL_HANDLERS = {
 
 模型知道有哪些 Skill (便宜), 需要时再加载完整内容 (贵)。
 
+边界说明: 本章把 skill body 作为 `load_skill` 工具的 `tool_result` 返回, 这是为了把“按需加载知识”讲清楚的教学实现。官方 Claude Code skills 是正式扩展机制: skill 描述会帮助 Claude 判断何时使用, 完整内容在使用时进入上下文; `/compact` 后被调用过的 skill body 会按官方预算重新注入或截断。参考: https://code.claude.com/docs/en/how-claude-code-works、https://code.claude.com/docs/en/context-window、https://code.claude.com/docs/en/slash-commands
+
 ## 相对 s04 的变更
 
 | 组件           | 之前 (s04)       | 之后 (s05)                     |

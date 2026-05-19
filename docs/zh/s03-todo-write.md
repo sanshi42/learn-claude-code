@@ -29,7 +29,7 @@
               +-----------	------------+
                           |
               if rounds_since_todo >= 3:
-                inject <reminder> into tool_result
+                append <reminder> after tool_result blocks
 ```
 
 ## 工作原理
@@ -61,17 +61,31 @@ TOOL_HANDLERS = {
 }
 ```
 
-3. nag reminder: 模型连续 3 轮以上不调用 `todo` 时注入提醒。
+3. nag reminder: 模型连续 3 轮以上不调用 `todo` 时注入提醒。计数按模型响应轮次计算, 不是按一轮里调用了多少个非 `todo` 工具计算。
 
 ```python
-if rounds_since_todo >= 3 and messages:
-    last = messages[-1]
-    if last["role"] == "user" and isinstance(last.get("content"), list):
-        last["content"].insert(0, {
-            "type": "text",
-            "text": "<reminder>Update your todos.</reminder>",
+results = []
+used_todo = False
+for block in response.content:
+    if block.type == "tool_use":
+        output = TOOL_HANDLERS[block.name](**block.input)
+        results.append({
+            "type": "tool_result",
+            "tool_use_id": block.id,
+            "content": str(output),
         })
+        if block.name == "todo":
+            used_todo = True
+
+rounds_since_todo = 0 if used_todo else rounds_since_todo + 1
+if rounds_since_todo >= 3:
+    results.append({
+        "type": "text",
+        "text": "<reminder>Update your todos.</reminder>",
+    })
 ```
+
+注意: reminder 被追加在本轮 `results` 末尾, 也就是所有 `tool_result` 后面。不要把 text 插到工具结果前面, 也不要在下一次 API 调用前修改上一条工具结果消息的开头; Claude API 要求 `tool_result` blocks 必须在该 user 消息 content 数组中排第一。
 
 "同时只能有一个 in_progress" 强制顺序聚焦。nag reminder 制造问责压力 -- 你不更新计划, 系统就追着你问。
 

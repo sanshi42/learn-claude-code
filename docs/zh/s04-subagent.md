@@ -73,6 +73,8 @@ def run_subagent(prompt: str) -> str:
 
 Subagent 可能跑了 30+ 次工具调用, 但整个消息历史直接丢弃。父 Agent 收到的只是一段摘要文本, 作为普通 `tool_result` 返回。
 
+边界说明: 本章的 `run_subagent()` 是教学实现, 使用同一个 Python 进程里的新 `messages` 列表来模拟上下文隔离。官方 Claude Code subagents 是公开产品能力: 每个 subagent 有独立 context window、可配置 system prompt、工具权限和权限模式, 并通过 subagent 定义或 `/agents` 管理。这里的重点是理解“隔离长输出, 只把摘要带回父上下文”这个 harness 机制, 不是复刻官方 subagent 运行时。参考: https://code.claude.com/docs/en/sub-agents
+
 ## 相对 s03 的变更
 
 | 组件           | 之前 (s03)       | 之后 (s04)                    |

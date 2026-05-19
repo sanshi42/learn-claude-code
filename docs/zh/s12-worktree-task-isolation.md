@@ -96,6 +96,7 @@ def remove(self, name, force=False, complete_task=False):
 事件类型: `worktree.create.before/after/failed`, `worktree.remove.before/after/failed`, `worktree.keep`, `task.completed`。
 
 崩溃后从 `.tasks/` + `.worktrees/index.json` 重建现场。会话记忆是易失的; 磁盘状态是持久的。
+边界说明: `worktree_*` 工具要求当前目录是 git repository; 非 git 目录会返回错误。Git worktree 提供目录/分支级隔离, 但不会自动解决合并冲突、共享文件冲突或任务切分错误。示例的 `.worktrees/index.json` 和事件流也没有事务锁, 适合理解隔离机制, 不等价于生产调度系统。
 
 ## 相对 s11 的变更
 

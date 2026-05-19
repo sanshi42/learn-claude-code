@@ -187,7 +187,7 @@ TOOLS = [
 
 def agent_loop(messages: list):
     while True:
-        # Drain background notifications and inject as system message before LLM call
+        # Drain background notifications and append them as a user message before the LLM call
         notifs = BG.drain_notifications()
         if notifs and messages:
             notif_text = "\n".join(

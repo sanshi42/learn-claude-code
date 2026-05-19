@@ -100,6 +100,8 @@ def _teammate_loop(self, name, role, prompt):
     self._find_member(name)["status"] = "idle"
 ```
 
+边界说明: 本章的团队是教学近似: 一个 Python 进程里开多个线程, 用 `.team/` 下的 JSONL 文件做邮箱。官方 Claude Code agent teams 是实验性功能, 默认关闭, 由多个 Claude Code 实例组成; lead、teammates、task list 和 mailbox 由产品管理, 本地状态路径和恢复限制也不同。这里保留 JSONL 邮箱只是为了把“多 agent 独立上下文 + 消息协调”讲清楚。参考: https://code.claude.com/docs/en/agent-teams
+
 ## 相对 s08 的变更
 
 | 组件           | 之前 (s08)       | 之后 (s09)                         |
